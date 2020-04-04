@@ -12,8 +12,16 @@ public class BoardPrinter {
 	public void print() {
 		char[][] boardPrint = board.getBoard();
 		for (int i = 7; i >= 0; i--) {
-			for (int j = 0; j < 8; j++) {
-				System.out.print(boardPrint[i][j]);
+			for (int j = 0; j < 8; j++) {	
+				if(boardPrint[i][j] == ' ') {
+					if(j%2==0 && i%2==0 || j%2!=0 && i%2!=0) {
+						System.out.print('+');
+					}else {
+						System.out.print('-');
+					}
+				}else {
+					System.out.print(boardPrint[i][j]);
+				}
 				System.out.print(" ");
 			}
 			int info = i + 1;

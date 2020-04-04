@@ -1,20 +1,24 @@
 package chess;
 
-public class Piece {
-
+public abstract class Piece {
 	protected String color;
+	protected int fromRank;
+	protected int fromFile;
+	protected int toRank;
+	protected int toFile;
+	protected char board[][];
+	
 
-	public Piece() {
-
+	public Piece(String color, char board[][] ,int fromRank, int fromFile, int toRank, int toFile) {
+		this.color = color;
+		this.fromRank = fromRank;
+		this.fromFile = fromFile;
+		this.toRank = toRank;
+		this.toFile = toFile;
+		this.board = board;
 	}
 
-	protected void move(String color, char board[][], char x, char y) {
-		if (board[y - '1'][x - 'A'] == 'p') {
-			System.out.println(color + ": This is a pawn");
-		}
-		if (board[y - '1'][x - 'A'] == 'P') {
-			System.out.println(color + ": This is a pawn");
-		}
-	}
-
+	abstract void checkPiece() throws Exception;
+	abstract void move();
+	abstract void eat();
 }
