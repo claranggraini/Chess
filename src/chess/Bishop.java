@@ -2,63 +2,43 @@ package chess;
 
 public class Bishop extends Piece {
 
-	Check check = new Check();
-	
-	public Bishop(String color, char[][] board, int fromRank, int fromFile, int toRank, int toFile) {
-		super(color, board, fromRank, fromFile, toRank, toFile);
-		
+	public Bishop(int rank, int file, String color) {
+		super(rank, file, color);
+		if (color.equals("White")) {
+			this.id = 'b';
+		} else {
+			this.id = 'B';
+		}
+		pieceList.add(this);
 	}
+
 	@Override
-	void checkPiece() throws Exception {
-		if(board[toRank][toFile] == ' ' && valBishop()) {
-			move();
-		}else if(board[toRank][toFile] != ' ' && valBishop()) {
-			eat();
-		}else {
+	public void checkPiece(Piece[][] board, int toRank, int toFile) throws Exception {
+		if (valPiece(board, toRank, toFile)) {
+			move(board, toRank, toFile);
+		} else {
 			throw new Exception("Move is invalid");
 		}
 	}
-	
-	public boolean valBishop() {
-		int row, col;
-		if(check.isChecked(color, board, fromRank, fromFile, toRank, toFile))
+
+	@Override
+	public boolean valPiece(Piece[][] board, int toRank, int toFile) {
+		if (rank == toRank || file == toFile)
 			return false;
-		if(fromRank == toRank || fromFile == toFile) return false;	
-		if(Math.abs(toRank - fromRank) != Math.abs(toFile - fromFile)) return false;
-		if(fromRank < toRank){
-			row = 1;
-		}else{
-			row = -1;
-		}			
-		if(fromFile < toFile){
-			col = 1;
-		}else{
-			col = -1;
-		}
-		
-		int y = fromFile + col;
-		for(int x = fromRank + row; x != toRank; x += row){
-			if(board[x][y] != ' '){
+		if (Math.abs(toRank - rank) != Math.abs(toFile - file))
+			return false;
+
+		int row = rank < toRank ? 1 : -1;
+		int col = file < toFile ? 1 : -1;
+
+		int y = file + col;
+		for (int x = rank + row; x != toRank; x += row) {
+			if (board[x][y] != null) {
 				return false;
 			}
 			y += col;
-		}	
-		return true;			
-	}
-	@Override
-	public void move() {
-		if(color.equals("White")) {
-			board[fromRank][fromFile] = ' ';
-			board[toRank][toFile] = 'b';
-		}else {
-			board[fromRank][fromFile] = ' ';
-			board[toRank][toFile] = 'B';
 		}
-	}
-	@Override
-	public void eat() {
-		System.out.println("BISHOP HAS EAT");
-		move();
+		return true;
 	}
 	
 }

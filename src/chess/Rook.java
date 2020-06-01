@@ -1,78 +1,59 @@
 package chess;
 
-public class Rook extends Piece{
+public class Rook extends Piece {
 
-	Check check = new Check();
-	int flag = 0;
-	
-	public Rook(String color, char[][] board, int fromRank, int fromFile, int toRank, int toFile) {
-		super(color, board, fromRank, fromFile, toRank, toFile);
-		
+	private boolean hasMoved;
+
+	public Rook(int rank, int file, String color) {
+		super(rank, file, color);
+		if (color.equals("White")) {
+			this.id = 'r';
+		} else {
+			this.id = 'R';
+		}
+		this.hasMoved = false;
+		pieceList.add(this);
+	}
+
+	public boolean isHasMoved() {
+		return hasMoved;
+	}
+
+	public void setHasMoved(boolean hasMoved) {
+		this.hasMoved = hasMoved;
 	}
 
 	@Override
-	void checkPiece() throws Exception {
-		if(board[toRank][toFile] == ' ' && valRook()) {
-			move();
-		}else if(board[toRank][toFile] != ' ' && valRook()) {
-			eat();
-		}else {
+	public void checkPiece(Piece[][] board, int toRank, int toFile) throws Exception {
+		if (valPiece(board, toRank, toFile)) {
+			move(board, toRank, toFile);
+			hasMoved = true;
+		} else {
 			throw new Exception("Move is invalid");
 		}
 	}
-	
-	public boolean valRook(){
-		if(check.isChecked(color, board, fromRank, fromFile, toRank, toFile))
+
+	@Override
+	public boolean valPiece(Piece[][] board, int toRank, int toFile) {
+		if (file != toFile && rank != toRank)
 			return false;
-		if(fromRank == toRank) {
-			if(toFile > fromFile) {
-				for(int col = fromFile; col < toFile; col++) {
-					if(board[toRank][col]!=' ' && col !=fromFile) return false;
-				}
-			}else if (toFile < fromFile) {
-				for(int col = fromFile; col > toFile; col--) {
-					if(board[toRank][col]!=' ' && col !=fromFile) return false;
+
+		int x = rank < toRank || file < toFile ? 1 : -1;
+
+		if (rank == toRank) {
+			for (int i = file + x; i != toFile; i += x) {
+				if (board[rank][i] != null)
+					return false;
+			}
+		} else if (file == toFile) {
+			for (int i = rank + x; i != toRank; i += x) {
+				if (board[i][file] != null) {
+					return false;
 				}
 			}
-		}else if(fromFile == toFile) {
-			if(toRank < fromRank) {
-				for(int row = fromRank; row > toRank; row--) {
-					if(board[row][toFile] != ' ' && row!=fromRank) return false;
-				}
-			}else if(toRank > fromRank) {
-				for(int row = fromRank; row < toRank; row++) {
-					if(board[row][toFile] != ' ' && row!=fromRank) return false;
-				}
-			}
-		}else if(fromRank!=toRank && fromFile!=toFile) return false;
+		}
+
 		return true;
 	}
-	
-	@Override
-	public void move() {
-		flag = 1;
-		if(color.equals("White")) {
-			board[fromRank][fromFile] = ' ';
-			board[toRank][toFile] = 'r';
-		}else {
-			board[fromRank][fromFile] = ' ';
-			board[toRank][toFile] = 'R';
-		}
-	}
-	
-	@Override
-	public void eat() {
-		System.out.println("ROOK HAS EAT");
-		move();
-	}
-	
-	public boolean checkMove() {
-		if(flag == 1) {
-			return true;
-		}
-		else {
-			return false;
-		}
-	}
-	
+
 }

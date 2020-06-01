@@ -1,46 +1,33 @@
 package chess;
 
-public class Knight extends Piece{
+public class Knight extends Piece {
 
-	Check check = new Check();
-	
-	public Knight(String color, char[][] board, int fromRank, int fromFile, int toRank, int toFile) {
-		super(color, board, fromRank, fromFile, toRank, toFile);
-		
+	public Knight(int rank, int file, String color) {
+		super(rank, file, color);
+		if (color.equals("White")) {
+			this.id = 'n';
+		} else {
+			this.id = 'N';
+		}
+		pieceList.add(this);
 	}
+
 	@Override
-	void checkPiece() throws Exception {
-		if(board[toRank][toFile] == ' ' && valKnight()) {
-			move();
-		}else if(board[toRank][toFile] != ' ' && valKnight()){
-			eat();
-		}else {
+	public void checkPiece(Piece[][] board, int toRank, int toFile) throws Exception {
+		if (valPiece(board, toRank, toFile)) {
+			move(board, toRank, toFile);
+		} else {
 			throw new Exception("Move is invalid");
 		}
-		
 	}
-	
-	public boolean valKnight() {
-		if(check.isChecked(color, board, fromRank, fromFile, toRank, toFile))
-			return false;
-		if(Math.abs(toRank-fromRank) == 1 && Math.abs(toFile-fromFile) == 2) return true;
-		else if(Math.abs(toRank-fromRank) == 2 && Math.abs(toFile - fromFile) == 1) return true;
-		return false;		
-	}
+
 	@Override
-	public void move() {
-		if(color.equals("White")) {
-			board[fromRank][fromFile] = ' ';
-			board[toRank][toFile] = 'n';
-		}else {
-			board[fromRank][fromFile] = ' ';
-			board[toRank][toFile] = 'N';
-		}
-	}
-	@Override
-	public void eat() {
-		System.out.println("KNIGHT HAS EAT");
-		move();
+	public boolean valPiece(Piece[][] board, int toRank, int toFile) {
+		if (Math.abs(toRank - rank) == 1 && Math.abs(toFile - file) == 2)
+			return true;
+		else if (Math.abs(toRank - rank) == 2 && Math.abs(toFile - file) == 1)
+			return true;
+		return false;
 	}
 	
 }

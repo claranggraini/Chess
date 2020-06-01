@@ -3,40 +3,112 @@ package chess;
 import java.util.Scanner;
 
 public class Board {
+
 	Scanner scan = new Scanner(System.in);
-	private char board[][];
+
+	private Piece[][] board = new Piece[8][8];
 	private int turn;
-	static Check check = new Check();
-	
-	private static boolean whiteKingMoved;
-	private static boolean whiteKingsideRookMoved;
-	private static boolean whiteQueensideRookMoved;
-	private static boolean blackKingMoved;
-	private static boolean blackKingsideRookMoved;
-	private static boolean blackQueensideRookMoved;
+	boolean isEnded = false;
 
 	public Board() {
-		board = new char[][] { { 'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r' }, { 'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p' },
-				{ ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' }, { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
-				{ ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' }, { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
-				{ 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P' }, { 'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R' } };
-		
+		this.initBoard();
 		turn = -1;
 	}
 
-	public int file(char f){
-        return f-'A';
-    }
-    
-    public int rank(char r){
-        return r-'1';
-    }
-	
+	public void initBoard() {
+//		board[0][4] = new King(0, 4, "White");
+//		board[7][4] = new King(7, 4, "Black");
+//
+//		board[0][0] = new Rook(0, 0, "White");
+//		board[0][1] = new Knight(0, 1, "White");
+//		board[0][2] = new Bishop(0, 2, "White");
+//		board[0][3] = new Queen(0, 3, "White");
+//		board[0][5] = new Bishop(0, 5, "White");
+//		board[0][6] = new Knight(0, 6, "White");
+//		board[0][7] = new Rook(0, 7, "White");
+//
+//		board[7][0] = new Rook(7, 0, "Black");
+//		board[7][1] = new Knight(7, 1, "Black");
+//		board[7][2] = new Bishop(7, 2, "Black");
+//		board[7][3] = new Queen(7, 3, "Black");
+//		board[7][5] = new Bishop(7, 5, "Black");
+//		board[7][6] = new Knight(7, 6, "Black");
+//		board[7][7] = new Rook(7, 7, "Black");
+//
+//		for (int i = 0; i < 8; i++) {
+//			board[1][i] = new Pawn(1, i, "White");
+//			board[6][i] = new Pawn(6, i, "Black");
+//		}
+		board[1][4] = new King(1, 4, "White");
+		board[7][7] = new King(7, 7, "Black");
+
+		board[7][0] = new Bishop(7, 0, "Black");
+		board[1][2] = new Bishop(1, 2, "White");
+		//board[7][6] = new Rook(7, 6, "White");
+		board[6][2] = new Rook(6, 2, "White");
+		board[0][0] = new Rook(0, 0, "White");
+		//board[0][7] = new Rook(0, 7, "White");
+		board[6][1] = new Pawn(6, 1, "Black");
+		board[1][1] = new Pawn(1, 1, "White");
+		
+		
+		for (int i = 2; i < 6; i++) {
+			for (int j = 0; j < 8; j++) {
+				board[i][j] = null;
+			}
+		}
+
+	}
+
+	public int file(char f) {
+		return f - 'A';
+	}
+
+	public int rank(char r) {
+		return r - '1';
+	}
+
+	public Piece[][] getBoard() {
+		return board;
+	}
+
+	public void print() {
+		for (int i = 7; i >= 0; i--) {
+			for (int j = 0; j < 8; j++) {
+				if (board[i][j] == null) {
+					if (j % 2 == 0 && i % 2 == 0 || j % 2 != 0 && i % 2 != 0) {
+						System.out.print('+');
+					} else {
+						System.out.print('-');
+					}
+				} else {
+					System.out.print(board[i][j].getId());
+				}
+				System.out.print(" ");
+			}
+			int info = i + 1;
+			System.out.println(info);
+		}
+		System.out.println("A B C D E F G H");
+	}
+
 	public void inputCoor() throws Exception {
+		Piece piece;
 		String color = turn == 1 ? "Black" : "White";
+		Check checker = new Check(board);
+
+		if (checker.gameOver(color)) {
+			isEnded = true;
+			return;
+		}
+
 		System.out.print(color + " move: ");
 
 		String coor = scan.next();
+		if (coor.length() < 5) {
+			throw new Exception("Invalid move: wrong input");
+		}
+		
 		char c1 = coor.charAt(0);
 		char c2 = coor.charAt(1);
 		char c3 = coor.charAt(2);
@@ -45,12 +117,9 @@ public class Board {
 
 		int fromFile = file(c1);
 		int fromRank = rank(c2);
-        int toFile = file(c4);
+		int toFile = file(c4);
 		int toRank = rank(c5);
-		
-		if (coor.length() != 5) {
-			throw new Exception("Invalid move: query must be 5 characters!");
-		}
+
 		if (c1 < 'A' || c1 > 'H') {
 			throw new Exception("Invalid move: 1st character");
 		}
@@ -66,184 +135,56 @@ public class Board {
 		if (c5 < '1' || c5 > '8') {
 			throw new Exception("Invalid move: 5th character");
 		}
-		if (board[fromRank][fromFile] == ' ') {
-			throw new Exception("Invalid move: the chosen piece doesn't exist");
+		
+		piece = board[fromRank][fromFile];
+		if (coor.length() > 5 && !piece.getClass().equals(Pawn.class) || coor.length() > 6) {
+			throw new Exception("Invalid move: wrong input");
 		}
-		if (c1 == c4 && c2 == c5) {
-			throw new Exception("Invalid move: the designated coordinate is wrong");
+		if (piece == null) {
+			throw new Exception("Please choose a piece");
 		}
-		if (pieceIsBlack(fromRank, fromFile) && color != "Black") {
+		if (pieceIsBlack(piece) && !color.equals("Black")) {
+			throw new Exception("Invalid move: wrong piece color");
+		} else if (pieceIsWhite(piece) && !color.equals("White")) {
 			throw new Exception("Invalid move: wrong piece color");
 		}
-		if (pieceIsWhite(fromRank, fromFile) && color != "White") {
-			throw new Exception("Invalid move: wrong piece color");
-		}
-		if ((pieceIsBlack(fromRank, fromFile) && pieceIsBlack(toRank, toFile)) || (pieceIsWhite(fromRank, fromFile) && pieceIsWhite(toRank, toFile))) {
-			throw new Exception("Invalid move: can't eat your own piece");
-		}
-		
-		if(board[fromRank][fromFile] == 'p' || board[fromRank][fromFile] == 'P') {
-			Pawn p = new Pawn(color, board, fromRank, fromFile, toRank, toFile);
-			p.checkPiece();
-		}else if(board[fromRank][fromFile] == 'r' || board[fromRank][fromFile] == 'R') {
-			Rook r = new Rook(color, board, fromRank, fromFile, toRank, toFile);
-			r.checkPiece();
-			if(r.checkMove()) {
-				if(fromRank == 0 && fromFile == 0) {
-					whiteQueensideRookMoved = true;
-				}
-				else if(fromRank == 0 && fromFile == 7) {
-					whiteKingsideRookMoved = true;
-				}
-				else if(fromRank == 7 && fromFile == 0) {
-					blackQueensideRookMoved = true;
-				}
-				else if(fromRank == 7 && fromFile == 7) {
-					blackKingsideRookMoved = true;
-				}
-			}
-		}else if(board[fromRank][fromFile] == 'b' || board[fromRank][fromFile] == 'B') {
-			Bishop bp = new Bishop(color, board, fromRank, fromFile, toRank, toFile);
-			bp.checkPiece();
-		}else if(board[fromRank][fromFile] == 'n' || board[fromRank][fromFile] == 'N') {
-			Knight n = new Knight(color, board, fromRank, fromFile, toRank, toFile);
-			n.checkPiece();
-		}else if(board[fromRank][fromFile] == 'q' || board[fromRank][fromFile] == 'Q') {
-			Queen q = new Queen(color, board, fromRank, fromFile, toRank, toFile);
-			q.checkPiece();
-		}else if(board[fromRank][fromFile] == 'k' || board[fromRank][fromFile] == 'K') {
-			King k = new King(color, board, fromRank, fromFile, toRank, toFile);
-			k.checkPiece();
-			if(k.checkMove()) {
-				if(fromRank == 0 && fromFile == 4) {
-					whiteKingMoved = true;
-				}
-				else if(fromRank == 7 && fromFile == 4) {
-					blackKingMoved = true;
-				}
+		if (board[toRank][toFile] != null) {
+			Piece p = board[toRank][toFile];
+			if (color.equals("Black") && pieceIsBlack(p) || color.equals("White") && pieceIsWhite(p)) {
+				throw new Exception("Invalid move: can't eat your own piece");
 			}
 		}
-		
-		if(color.equals("White")) {
-			if(check.isChecked("Black", board, 10, 10, 10, 10))
-				System.out.println("BLACK CHECKED");
-		}
-		else {
-			if(check.isChecked("White", board, 10, 10, 10, 10))
-			System.out.println("WHITE CHECKED");
+		if (coor.length() == 6 && promoteQuery(coor.charAt(5))) {
+			Pawn p = (Pawn) piece;
+			p.setToPromote(coor.charAt(5));
 		}
 		
+		checker.check(color);
+		piece.checkPiece(board, toRank, toFile);
+		checker.reCheck(piece, color, fromRank, fromFile);
+
 		turn *= -1;
 	}
 
-	public boolean pieceIsBlack(int rank, int file) {
-		if (Character.isUpperCase(board[rank][file])) {
-			return true;
-		}
-		return false;
-	}
-	
-	public boolean pieceIsWhite(int rank, int file) {
-		if (Character.isLowerCase(board[rank][file])) {
+	public boolean pieceIsBlack(Piece p) {
+		if (p.getColor().equals("Black")) {
 			return true;
 		}
 		return false;
 	}
 
-	public char[][] getBoard() {
-		return board;
-	}
-	
-	public static boolean canKingsideCastling(String color, char[][] board, int toRank, int toFile) {
-		if (color.equals("White")) {
-			if(whiteKingMoved == true || whiteKingsideRookMoved == true) {
-				return false;
-			}
-			else if(board[0][5] != ' ' || board[0][6] != ' ') {
-				return false;
-			}
-			else if(check.isChecked(color, board, 10, 10, 10, 10)) {
-				return false;
-			}
-			else if(check.isChecked(color, board, 0, 4, 0, 5)) {
-				return false;
-			}
-			else if(check.isChecked(color, board, 0, 4, 0, 6)) {
-				return false;
-			}
-			else {
-				whiteKingMoved = true;
-				whiteKingsideRookMoved = true;
-			}
+	public boolean pieceIsWhite(Piece p) {
+		if (p.getColor().equals("White")) {
+			return true;
 		}
-		else if (color.equals("Black")) {
-			if(blackKingMoved == true || blackKingsideRookMoved == true) {
-				return false;
-			}
-			else if(board[7][5] != ' ' || board[7][6] != ' ') {
-				return false;
-			}
-			else if(check.isChecked(color, board, 10, 10, 10, 10)) {
-				return false;
-			}
-			else if(check.isChecked(color, board, 7, 4, 7, 5)) {
-				return false;
-			}
-			else if(check.isChecked(color, board, 7, 4, 7, 6)) {
-				return false;
-			}
-			else {
-				blackKingMoved = true;
-				blackKingsideRookMoved = true;
-			}
-		}
-		return true;
-	}
-	
-	public static boolean canQueensideCastling(String color, char[][] board, int toRank, int toFile) {
-		if (color.equals("White")) {
-			if(whiteKingMoved == true || whiteQueensideRookMoved == true) {
-				return false;
-			}
-			else if(board[0][3] != ' ' || board[0][2] != ' ' || board[0][1] != ' ') {
-				return false;
-			}
-			else if(check.isChecked(color, board, 10, 10, 10, 10)) {
-				return false;
-			}
-			else if(check.isChecked(color, board, 0, 4, 0, 3)) {
-				return false;
-			}
-			else if(check.isChecked(color, board, 0, 4, 0, 2)) {
-				return false;
-			}
-			else {
-				whiteKingMoved = true;
-				whiteQueensideRookMoved = true;
-			}
-		}
-		else if (color.equals("Black")) {
-			if(blackKingMoved == true || blackQueensideRookMoved == true) {
-				return false;
-			}
-			else if(board[7][3] != ' ' || board[7][2] != ' ' || board[7][1] != ' ') {
-				return false;
-			}
-			else if(check.isChecked(color, board, 10, 10, 10, 10)) {
-				return false;
-			}
-			else if(check.isChecked(color, board, 7, 4, 7, 3)) {
-				return false;
-			}
-			else if(check.isChecked(color, board, 7, 4, 7, 2)) {
-				return false;
-			}
-			else {
-				blackKingMoved = true;
-				blackQueensideRookMoved = true;
-			}
-		}
-		return true;
+		return false;
 	}
 
+	public void setBoard(Piece[][] board, int toRank, int toFile, Piece p) {
+		this.board[toRank][toFile] = p;
+	}
+
+	public boolean promoteQuery(char toPromote) {
+		return toPromote == 'Q' || toPromote == 'B' || toPromote == 'R' || toPromote == 'N';
+	}
 }

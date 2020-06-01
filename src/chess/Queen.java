@@ -2,39 +2,34 @@ package chess;
 
 public class Queen extends Piece {
 
-	public Queen(String color, char[][] board, int fromRank, int fromFile, int toRank, int toFile) {
-		super(color, board, fromRank, fromFile, toRank, toFile);
-		
+	public Queen(int rank, int file, String color) {
+		super(rank, file, color);
+		if (color.equals("White")) {
+			this.id = 'q';
+		} else {
+			this.id = 'Q';
+		}
+		pieceList.add(this);
 	}
-	
-	Rook r = new Rook(color, board, fromRank, fromFile, toRank, toFile);
-	Bishop bp = new Bishop(color, board, fromRank, fromFile, toRank, toFile);
-	
+
 	@Override
-	void checkPiece() throws Exception {
-		if(board[toRank][toFile] == ' ' && (r.valRook()||bp.valBishop())) {
-			move();
-		}else if(board[toRank][toFile] != ' ' && (r.valRook()||bp.valBishop())) {
-			eat();
-		}else {
+	public void checkPiece(Piece[][] board, int toRank, int toFile) throws Exception {
+		if (valPiece(board, toRank, toFile)) {
+			move(board, toRank, toFile);
+		} else {
 			throw new Exception("Move is invalid");
-		} 
-	}
-	
-	@Override
-	public void move() {
-		if(color.equals("White")) {
-			board[fromRank][fromFile] = ' ';
-			board[toRank][toFile] = 'q';
-		}else {
-			board[fromRank][fromFile] = ' ';
-			board[toRank][toFile] = 'Q';
 		}
 	}
-	
+
 	@Override
-	public void eat() {
-		System.out.println("QUEEN HAS EAT");
-		move();
+	public boolean valPiece(Piece[][] board, int toRank, int toFile) {
+		Rook r = new Rook(rank, file, color);
+		pieceList.remove(pieceList.size() - 1);
+		Bishop bp = new Bishop(rank, file, color);
+		pieceList.remove(pieceList.size() - 1);
+		if (r.valPiece(board, toRank, toFile) || bp.valPiece(board, toRank, toFile)) {
+			return true;
+		}
+		return false;
 	}
 }
