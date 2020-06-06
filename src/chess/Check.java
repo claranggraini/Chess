@@ -207,7 +207,6 @@ public class Check {
 						if (!(piece instanceof King) && piece.valPiece(board, j, k)) {
 							try {
 								if(!board[j][k].getColor().equals(color)) {
-									System.out.println(piece + " " + j + " " + k);
 									return true;
 								}
 							} catch (Exception ignored) {
@@ -220,7 +219,7 @@ public class Check {
 				}
 			}
 		}
-		return false;
+		return true;
 	}
 
 	private void listAttackedSquare(String color) {
@@ -237,6 +236,9 @@ public class Check {
 				}
 				for (int j = 0; j < 8; j++) {
 					for (int k = 0; k < 8; k++) {
+						if (attacker.getRank() == j && attacker.getFile() == k) {
+							continue;
+						}
 						if (attacker.valPiece(board, j, k)) {
 							attackedSquare[j][k] = true;
 						}
