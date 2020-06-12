@@ -27,7 +27,14 @@ class BishopTest {
 		whiteBishopFriend = board[3][3] = new Bishop(3, 3, "White");
 
 		// ada temen gabisa lewat
-		assertEquals(false, whiteBishop.valPiece(board, 4, 4));
+		assertEquals(false, whiteBishop.valPiece(board, 2, 2));
+		
+		//can't do straight moves
+		assertEquals(false, whiteBishop.valPiece(board, 2, 4));
+		assertEquals(false, whiteBishop.valPiece(board, 4, 2));
+		
+		//out of bound
+		assertEquals(false, blackBishop.valPiece(board,-1 , -1));
 	}
 	
 }

@@ -28,7 +28,14 @@ class KnightTest {
 		assertEquals(true, whiteKnight.valPiece(board, 5, 2));
 		assertEquals(true, whiteKnight.valPiece(board, 4, 1));
 
-		whiteKnightFriend = board[3][3] = new Knight(4, 3, "White");
+		//can't move straight or diagonal
+		assertEquals(false, whiteKnight.valPiece(board, 2, 2));
+		assertEquals(false, whiteKnight.valPiece(board, 4, 3));
+		
+		//out of bound
+		assertEquals(false, whiteKnight.valPiece(board, 1, -1));
+		
+		whiteKnightFriend = board[4][3] = new Knight(4, 3, "White");
 
 		// ada temen bisa lewat
 		assertEquals(true, whiteKnight.valPiece(board, 4, 1));

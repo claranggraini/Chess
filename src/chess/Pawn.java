@@ -22,16 +22,15 @@ public class Pawn extends Piece {
 		}
 		this.isDoublePushed = false;
 		this.toPromote = ' ';
-		pieceList.add(this);
 	}
 
-	public boolean isDoublePushed() {
-		return isDoublePushed;
-	}
-
-	public void setDoublePushed(boolean isDoublePushed) {
-		this.isDoublePushed = isDoublePushed;
-	}
+//	public boolean isDoublePushed() {
+//		return isDoublePushed;
+//	}
+//
+//	public void setDoublePushed(boolean isDoublePushed) {
+//		this.isDoublePushed = isDoublePushed;
+//	}
 
 	@Override
 	public void checkPiece(Piece[][] board, int toRank, int toFile) throws Exception {
@@ -41,6 +40,7 @@ public class Pawn extends Piece {
 			throw new Exception("Move is invalid");
 		} else if (valPiece(board, toRank, toFile)) {
 			move(board, toRank, toFile);
+			lastMove = this;
 			if (validatePromotion(toRank)) {
 				promote(board, toRank, toFile);
 			}
@@ -51,7 +51,8 @@ public class Pawn extends Piece {
 
 	public boolean valPiece(Piece[][] board, int toRank, int toFile) {
 		int i = color.equals("White") ? 1 : -1;
-
+		
+		if(outOfBound(toRank, toFile)) return false;
 		if (file == toFile && board[toRank][toFile] == null) {
 			return simpleMove(board, toRank);
 		} else if (Math.abs(file - toFile) == 1 && toRank - rank == i && board[toRank][toFile] != null) {
@@ -86,7 +87,6 @@ public class Pawn extends Piece {
 		if (board[rank][file + i].getClass().equals(Pawn.class) && lastMove.equals(board[rank][file + i])) {
 			Pawn p = (Pawn) board[rank][file + i];
 			if (p.isDoublePushed == true) {
-				pieceList.remove(board[rank][file + i]);
 				board[rank][file + i] = null;
 				return true;
 			}
@@ -110,11 +110,10 @@ public class Pawn extends Piece {
 		}
 	}
 
-	private boolean validatePromotion(int toRank) {
-		if (color.equals("White") && toRank == 7)
-			return true;
-		else if (color.equals("Black") && toRank == 0)
-			return true;
+	public boolean validatePromotion(int toRank) {
+		if (color.equals("White") && toRank == 7) return true;
+		else if (color.equals("Black") && toRank == 0) return true;
+		
 		return false;
 	}
 

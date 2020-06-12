@@ -15,7 +15,6 @@ public class King extends Piece {
 		}
 		this.isCheck = false;
 		this.hasMoved = false;
-		pieceList.add(this);
 	}
 
 	public boolean isCheck() {
@@ -32,38 +31,39 @@ public class King extends Piece {
 			System.out.println(color + " CASTLING");
 		} else if (valPiece(board, toRank, toFile)) {
 			move(board, toRank, toFile);
-			hasMoved = true;
 		} else {
 			throw new Exception("Move is invalid");
 		}
+		lastMove = this;
+		hasMoved = true;
 	}
 
 	@Override
 	public boolean valPiece(Piece[][] board, int toRank, int toFile) {
-		if (Math.abs(toRank - rank) == 1 && Math.abs(toFile - file) == 1)
-			return true;
-		else if (Math.abs(toRank - rank) == 1 && file == toFile)
-			return true;
-		else if (Math.abs(toFile - file) == 1 && rank == toRank)
-			return true;
+		if(outOfBound(toRank, toFile)) return false;
+		if (Math.abs(toRank - rank) == 1 && Math.abs(toFile - file) == 1) return true;
+		else if (Math.abs(toRank - rank) == 1 && file == toFile) return true;
+		else if (Math.abs(toFile - file) == 1 && rank == toRank) return true;
+		
 		return false;
 	}
 
-	private boolean castling(Piece[][] board, int toFile) {
-		checker = new Check(board);
+	public boolean castling(Piece[][] board, int toFile) {
+		
+		checker = new Check(board, color);
 		int x = toFile < file ? -2 : 1;
-		if (isCheck || !board[rank][toFile + x].getClass().equals(Rook.class))
-			return false;
-		if (hasMoved || ((Rook) board[rank][toFile + x]).isHasMoved())
-			return false;
+		
+		if(outOfBound(rank, toFile)||outOfBound(rank, toFile + x)) return false;
+		if (isCheck ||board[rank][toFile + x]==null|| !board[rank][toFile + x].getClass().equals(Rook.class)) return false;
+		if (hasMoved ||((Rook) board[rank][toFile + x]).isHasMoved()) return false;
+		
 		x = x == -2 ? -1 : 1;
-		if (x == -1 && board[rank][toFile + x] != null)
-			return false;
+		
+		if (x == -1 && board[rank][toFile + x] != null) return false;
 		for (int temp = file + x; file != toFile; temp += x) {
-			if (board[this.rank][temp] != null)
-				return false;
+			if (board[this.rank][temp] != null) return false;
 			move(board, rank, temp);
-			if (checker.check(color)) {
+			if (checker.check()) {
 				isCheck = false;
 				move(board, rank, temp - x);
 				return false;

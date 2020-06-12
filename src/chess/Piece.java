@@ -1,14 +1,11 @@
 package chess;
 
-import java.util.Vector;
-
 public abstract class Piece {
 
 	protected int rank;
 	protected int file;
 	protected char id;
 	protected String color;
-	protected static Vector<Piece> pieceList = new Vector<Piece>();
 	protected static Piece lastMove = null;
 	protected Piece eatenPiece;
 
@@ -52,14 +49,6 @@ public abstract class Piece {
 		this.color = color;
 	}
 
-	public static Vector<Piece> getPieceList() {
-		return pieceList;
-	}
-
-	public static void setPieceList(Vector<Piece> pieceList) {
-		Piece.pieceList = pieceList;
-	}
-
 	public Piece getEatenPiece() {
 		return eatenPiece;
 	}
@@ -68,7 +57,14 @@ public abstract class Piece {
 		this.eatenPiece = eatenPiece;
 	}
 
-	public abstract void checkPiece(Piece[][] board, int toRank, int toFile) throws Exception;
+	public void checkPiece(Piece[][] board, int toRank, int toFile) throws Exception{
+		if (valPiece(board, toRank, toFile)) {
+			move(board, toRank, toFile);
+			lastMove = this;
+		} else {
+			throw new Exception("Move is invalid");
+		}
+	}
 
 	protected void move(Piece[][] board, int toRank, int toFile) {
 		board[rank][file] = null;
@@ -78,11 +74,15 @@ public abstract class Piece {
 			eatenPiece = null;
 		if (board[rank][file] != null) {
 			eatenPiece = board[rank][file];
-			pieceList.remove(board[rank][file]);
 		}
 		board[rank][file] = this;
-		lastMove = this;
 	}
 
+	protected boolean outOfBound(int toRank, int toFile) {
+		if(toRank < 0 || toRank > 7) return true;
+		if(toFile < 0 || toFile > 7) return true;
+		return false;
+	}
+	
 	public abstract boolean valPiece(Piece[][] board, int toRank, int toFile);
 }

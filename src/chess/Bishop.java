@@ -9,24 +9,12 @@ public class Bishop extends Piece {
 		} else {
 			this.id = 'B';
 		}
-		pieceList.add(this);
-	}
-
-	@Override
-	public void checkPiece(Piece[][] board, int toRank, int toFile) throws Exception {
-		if (valPiece(board, toRank, toFile)) {
-			move(board, toRank, toFile);
-		} else {
-			throw new Exception("Move is invalid");
-		}
 	}
 
 	@Override
 	public boolean valPiece(Piece[][] board, int toRank, int toFile) {
-		if (rank == toRank || file == toFile)
-			return false;
-		if (Math.abs(toRank - rank) != Math.abs(toFile - file))
-			return false;
+		if(outOfBound(toRank, toFile)) return false;
+		if (Math.abs(toRank - rank) != Math.abs(toFile - file)) return false;
 
 		int row = rank < toRank ? 1 : -1;
 		int col = file < toFile ? 1 : -1;
