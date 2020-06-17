@@ -12,5 +12,5 @@
 - [✓] pawn promotion
 - [✓] checkmate
 - [✓] draw on stalemate position
-- [ ] unit tests: test coverage min. 90%
-- [ ] reduce code smells
+- [✓] unit tests: test coverage min. 90% (<90%)
+- [✓] reduce code smells

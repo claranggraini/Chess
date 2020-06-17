@@ -8,14 +8,14 @@ public class Board {
 
 	private Piece[][] board = new Piece[8][8];
 	private int turn;
-	boolean isEnded = false;
+	public boolean isEnded = false;
 
 	public Board() {
 		this.initBoard();
 		turn = -1;
 	}
 
-	public void initBoard() {
+	private void initBoard() {
 		board[0][4] = new King(0, 4, "White");
 		board[7][4] = new King(7, 4, "Black");
 
@@ -54,10 +54,6 @@ public class Board {
 
 	public int rank(char r) {
 		return r - '1';
-	}
-
-	public Piece[][] getBoard() {
-		return board;
 	}
 
 	public void print() {
@@ -168,10 +164,6 @@ public class Board {
 			return true;
 		}
 		return false;
-	}
-
-	public void setBoard(Piece[][] board, int toRank, int toFile, Piece p) {
-		this.board[toRank][toFile] = p;
 	}
 
 	private boolean promoteQuery(char toPromote) {

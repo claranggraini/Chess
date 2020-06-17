@@ -102,10 +102,10 @@ class CheckTest {
 	
 	@Test
 	void testGameOver() { 
-		whiteKing = board[1][0] = new King(1, 0, "Black");
-		blackKing = board[4][6] = new King(4, 6, "White");
-		blackQueen = board[7][7] = new Queen(7, 7, "White");
-		whitePawn = board[1][1] = new Pawn(1, 1, "Black");
+		whiteKing = board[1][0] = new King(1, 0, "White");
+		blackKing = board[4][6] = new King(4, 6, "Black");
+		blackQueen = board[7][7] = new Queen(7, 7, "Black");
+		whitePawn = board[1][1] = new Pawn(1, 1, "White");
 		
 		Check checker = new Check(board, "Black");
 		
